@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def get_escape_time(c:complex, max_iterations: int) -> int | None:
     """Returns int - the number of iterations which pass before c escapes -
       or None - if c does not escape (< 2) in the specified number of iterations"""
@@ -13,3 +16,8 @@ def get_escape_time(c:complex, max_iterations: int) -> int | None:
         elif expression < 2:
            number_of_iterations += 1
     return None
+def get_escape_time_color_arr(
+        c_arr: np.ndarray,
+        max_iterations: int
+) -> np.ndarray:
+    
