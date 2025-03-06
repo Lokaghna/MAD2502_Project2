@@ -20,4 +20,5 @@ def get_escape_time_color_arr(
         c_arr: np.ndarray,
         max_iterations: int
 ) -> np.ndarray:
+    a = np.zeros_like(c_arr)
     
