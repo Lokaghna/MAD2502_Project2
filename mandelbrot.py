@@ -36,6 +36,13 @@ def get_escape_time_color_arr(
         c_arr: np.ndarray,
         max_iterations: int
 ) -> np.ndarray:
+    """Compute the escape of the color array for a given grid of complex numbers based on an iteration process
+    Return:
+    --------
+    An array that has the same shape with the c_arr, containing values in the range[0,1] so that:
+    -Points that never escape are colored black(0.0)
+    -Points with 0 escape time are colored white(1.0)
+    -Points with maximum escape time are colored with 1/(max_iterations+1), which is close to 0.0"""
     a = np.zeros_like(c_arr)
     escape_time = np.full(c_arr.shape, max_iterations + 1)
     escape_points = np.ones(c_arr.shape, dtype=bool)
