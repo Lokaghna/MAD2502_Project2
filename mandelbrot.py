@@ -41,4 +41,20 @@ def get_escape_time_color_arr(
         max_iterations: int
 ) -> np.ndarray:
     a = np.zeros_like(c_arr)
+    escape_time = np.full(c_arr.shape, max_iterations + 1)
+    escape_points = np.ones(c_arr.shape, dtype=bool)
+    for n in range(max_iterations):
+        a[escape_points] = a[escape_points] * a[escape_points] + c_arr[escape_points]
+        escaped = np.abs(a) > 2
+        escape_time[escaped & escape_points] = n
+        escape_points[escaped] = False
+
+    color = (max_iterations - escape_time +1 )/ (max_iterations + 1)
+    color[escape_time == 0] = 1.0
+    return color.reshape(color.shape[1:])
+
+
+
+
+
     
