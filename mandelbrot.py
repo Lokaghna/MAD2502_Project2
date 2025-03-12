@@ -7,13 +7,10 @@ def get_escape_time(c:complex, max_iterations: int) -> int | None:
 
     z = 0
 
-    for num in range(max_iterations):
+    for num in range(max_iterations+1):
         sequence = z = (z * z) + c
-        if sequence == 2:
+        if abs(sequence) > 2:
             return num
-        elif abs(sequence) > 2:
-            return num
-
     return None
 
 
