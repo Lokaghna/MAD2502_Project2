@@ -13,6 +13,7 @@ def get_escape_time(c: complex,
         sequence = z = (z * z) + c
         if abs(sequence) > 2:
             return num
+
     return None
 
 
@@ -63,7 +64,7 @@ def get_escape_time_color_arr(
 def get_julia_color_arr(z_arr: np.ndarray,  # 2D grid of initial z-values (complex)
                         c: complex,  # Fixed complex parameter for z^2 + c
                         max_iterations: int
-                        ) -> np.ndarray:
+) -> np.ndarray:
     """
         Return a 2D array of grayscale values in [0,1], representing how quickly
         each point z in z_arr escapes under z_{n+1} = z_n^2 + c.
@@ -74,37 +75,40 @@ def get_julia_color_arr(z_arr: np.ndarray,  # 2D grid of initial z-values (compl
 
         The shape of the returned array matches the (height, width) of z_arr
         (after removing any leading dimension, if present).
+
+        Code Comments:
+            Initialization:
+            - z: # copy z_arr, so we can update it in-place
+            - escape_time: # track the iteration that points escape at
+                           #initialize to max_iterations + 1 (hasn't escaped_)
+            - active: # boolean of points that have not escaped yet
+
+            Loop:
+            - escaped: # check which have now escaped
+            - escape_time: # record the iteration n for newly escaped points
+            - active: # mark escaped points as inactive
+
+            Output:
+            - color: # convert escape_time to a 0.0-1.0 grayscale
+                     # if a point never escaped -> escape_time = max_iterations+1 => color ~ 0 (black).
+                     # if a point escapes quickly (small n) -> color ~ 1 (white).
+                     # make non-escaped points (still max_iterations+1) to 0 (solid black)
+                     # remove first dimension to ensure result is 2D
         """
-    # copy z_arr so we can update it in-place
+
     z = np.copy(z_arr)
-
-    # track the iteration that points escape at
-    # initialize to max_iterations + 1 (hasn't escaped_
     escape_time = np.full(z_arr.shape, max_iterations + 1, dtype=int)
-
-    # boolean of points that have not escaped yet
     active = np.ones(z_arr.shape, dtype=bool)
+    escape_threshold = max(abs(c), 2)
 
     for n in range(max_iterations):
-        # only update points that are still active (as determined above)
         z[active] = z[active] * z[active] + c
 
-        # check which have now escaped
-        escaped = np.abs(z) > 2
-
-        # record the iteration n for newly escaped points
+        escaped = np.abs(z) > escape_threshold
         escape_time[escaped & active] = n
-
-        # mark escaped points as inactive
         active[escaped] = False
 
-    # convert escape_time to a 0.0-1.0 grayscale
-    # if a point never escaped -> escape_time = max_iterations+1 => color ~ 0 (black).
-    # if a point escapes quickly (small n) -> color ~ 1 (white).
     color = (max_iterations - escape_time + 1) / (max_iterations + 1)
-
-    # make non-escaped points (still max_iterations+1) to 0 (solid black)
     color[escape_time == (max_iterations + 1)] = 0.0
 
-    # remove first dimension to ensure result is 2D
-    return color.reshape(color.shape[1:])
+    return color
