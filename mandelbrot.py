@@ -44,18 +44,20 @@ def get_escape_time_color_arr(
     -Points with 0 escape time are colored white(1.0)
     -Points with maximum escape time are colored with 1/(max_iterations+1), which is close to 0.0"""
 
-    a = np.zeros_like(c_arr)
-    escape_time = np.full(c_arr.shape, max_iterations + 1)
+    a = np.zeros_like(c_arr, dtype=np.complex128)
+    escape_time = np.full(c_arr.shape, max_iterations + 1, dtype=int)
     escape_points = np.ones(c_arr.shape, dtype=bool)
+
     for n in range(max_iterations):
         a[escape_points] = a[escape_points] * a[escape_points] + c_arr[escape_points]
         escaped = np.abs(a) > 2
+
         escape_time[escaped & escape_points] = n
         escape_points[escaped] = False
 
     color = (max_iterations - escape_time + 1) / (max_iterations + 1)
-    color[escape_time == 0] = 1.0
-    return color.reshape(color.shape[1:])
+
+    return color
 
 
 def get_julia_color_arr(z_arr: np.ndarray,  # 2D grid of initial z-values (complex)
